@@ -156,7 +156,29 @@ interested in. He does lots of stuff to blah \todo[inline]{Section on vanderberg
 
 \todo[inline]{paragraph on: we would like to do primal-dual IPMs but can't (just give KKT)}
 \section{A Predictor-Corrector Method}
-Nesterov's method goes here.
+In \todo{cite Nesterov}, Nesterov presents an algorithm for solving a general
+primal-dual cone problem, i.e. when the cone is not necessarily symmetric. This
+method involves a centering step based on the primal, and uses the dual barrier
+only in computing an appropriate step size. While the usual gradient and
+Hessian are needed for the primal barrier, we only need the value of the dual
+barrier. In fact, per Nesterov, the value of the dual barrier need not be terribly accurate.
+
+In our case, for the standard log determinant barrier function for the semidefinite cone, we need to compute the conjugate
+\begin{equation}
+f_*(s) = \max_{x \in \mathcal T_n} \{ s^T x + \log\det(\text{toeplitz}(x))\}.
+\end{equation}
+For this barrier, in the case of the semidefinite cone, we have an explicit
+form for the conjugate. When we further constrain $x$ to the Toeplitz cone,
+though, we no longer know of a closed-form solution. In practice we solve this
+using Newton's method.
+
+The most computationally-intensive part of Nesterov's algorithm is the
+computation of a step size $\alpha$ such that $\Omega(z + \alpha \delta z) =
+\Omega(z) + C$ for a function $\Omega(z)$ involves a sum of the barrier and
+conjugate barrier. Again, we know of no closed-form solution, so we compute
+$\alpha$ using the bisection method.
+
+
 \section{Numerical Results}
 Our implementation is hosted on Github at \url{github.com/mstaib/toeplitz-ipm}.
 Unfortunately we were unable to produce a fully working variation of Nesterov's
