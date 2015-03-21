@@ -1,0 +1,54 @@
+% sections 
+\usepackage{etoolbox}
+% Patch the sectioning commands to provide a hook to be used later
+\preto{\section}{\def\leveltitle{\hwproblemname}}
+\preto{\subsection}{\def\leveltitle{\hwpartname}}
+\preto{\subsubsection}{\def\leveltitle{\hwsubpartname}}
+
+\makeatletter
+% \@sect is called with normal sectioning commands
+% Argument #8 to \@sect is the title
+% Thus \section{Title} will do \gdef\sectiontitle{Title}
+\pretocmd{\@sect}
+{\expandafter\gdef\leveltitle{#8}}
+{}{}
+% \@ssect is called with *-sectioning commands
+% Argument #5 to \@ssect is the title
+\pretocmd{\@ssect}
+{\expandafter\gdef\leveltitle{#5}}
+{}{}
+\makeatother
+
+\newcommand{\hwproblem}[1]{\section*{#1}}
+\newcommand{\hwpart}[1]{\subsection*{(#1)}}
+\newcommand{\hwsubpart}[1]{\subsubsection*{(#1)}}
+
+% todo notes
+\usepackage{todonotes}
+\newcommand{\todon}[1]{\todo[inline,backgroundcolor=red!40!white]
+{\ifdef{\hwproblemname}{\hwproblemname}{}\ifdef{\hwpartname}{\hwpartname}{}\ifdef{\hwsubpartname}{\hwsubpartname}{}\hspace{2pt}-- #1}}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+% Removes all indentation from paragraphs
+\setlength\parindent{0pt} 
+
+% Line spacing
+\linespread{1.1} 
+
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\large \hwAuthorName,\ \hwAuthorEmail} % Top left header
+\rhead{\large \hwClass\ \hwTitle\ $|$\ \thepage\ of\ \protect\pageref{LastPage}} % Top right header
+\cfoot{} % remove page numbers from bottom
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule

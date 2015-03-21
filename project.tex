@@ -1,0 +1,121 @@
+\documentclass{article}
+
+\usepackage{graphicx} % Required to insert images
+\usepackage{listings} % Required for insertion of code
+\usepackage{courier} % Required for the courier font
+\usepackage{todonotes}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{enumerate}
+\usepackage[margin=1.0in]{geometry}
+
+% homework section framework, etc...
+\input defs.tex
+\title{Implementation of interior-point methods for positive semi-definite Toeplitz cone programming}
+\author{Matt Staib, Dieterich Lawson}
+\begin{document}
+\maketitle
+\large
+\section{Introduction}
+Consider the cone of positive-semidefinite Toeplitz matrices
+\[
+  \toepcn_n = \{x \in \reals^n \mid \toep(x) \geq 0\}
+\]
+with $\toep(x)$ defined as
+
+\[
+  \toep(x)_{ij} = \begin{cases}
+      x_{|i-j|+1} &  0 \leq |i-j| \leq n-1 \\
+      0 & \mbox{otherwise}
+\end{cases}.
+\]
+
+In words, $\toep (x)$ is the square Toeplitz matrix resulting from taking the $i$th
+entry of $x$ as the $i$th sub- and super-diagonal. This cone appears in various applications
+in signal processing \todo[inline]{Flesh out applications}. In this paper we investigate methods for cone programming
+over $\toepcn$, i.e. we present methods for solving problems of the form
+
+\begin{equation}\label{primal}
+  \begin{array}{ll}
+    \mbox{minimize}    & c^Tx \\
+    \mbox{subject to } & Ax = b \\
+                       & x \in \toepcn_n. 
+  \end{array}
+\end{equation}
+
+where $x\in \reals^n$ is the optimization variable, $c \in \reals^n$, $A \in \reals^{m\times n}$, 
+and $b \in \reals^m$. The central difficulty for problems of this form is that $\toepcn_n$
+is not symmetric, so much of the standard primal-dual machinery becomes unweildly.
+
+The remainder of this paper is organized as follows. We first explore the properties of 
+$\toepcn_n$, deriving its dual and showing that it is not symmetric. To motivate
+new algorithms we then investigate how un-symmetric cones present a problem for a standard 
+primal-dual interior point method. We discuss a suitable barrier for $\toepcn_n$ 
+and its use in two different algorithms that make speed gains over the standard primal-dual
+interior-point method by forgoing pieces of the dual picture. Finally we present some 
+numeric results from these algorithms. Note that nothing presented here is original, and in
+many cases follows our sources literally.
+
+\section{The Positive Semi-Definite Toeplitz Cone}
+
+To characterize the dual of $\toepcn_n$ we show that $\toepcn_n$ is the dual of the 
+cone of finite autocorrelation sequences. A finite autocorrelation sequence is a vector
+$x \in \reals^n$ with a $y \in \reals^n$ such that 
+\[
+  x_k = \sum_{i=1}^{n-k} y_iy_{i+k} \quad k=1,\ldots,n.
+\] 
+For any positive scalar $\alpha$, $\alpha x$ can be represented as above 
+by $\alpha^{1/2}y$, so the set of finite autocorrelation sequences forms a cone.
+The dual of $\corrcn_n$ is 
+\[
+  \corrcn^*_n = \{z \in \reals^n \mid z^Tx \geq 0 \text{ for } x \in \corrcn_n\}.
+\]
+If $z^Tx \geq 0$ for all $x \in \corrcn_n$, then for all
+$y \in \reals^n$ 
+\[
+  z^Tx \geq 0 \iff \sum_{i=1}^n z_i \left(\sum_{i=1}^{n-k} y_iy_{i+k}\right).
+\]
+\todo[inline]{probably don't want that iff symbol in there}
+The summation above can be expressed in terms of the Toeplitz form of $z$ ---
+the above is true if and only if $y^TT_n(z)y \geq 0$ for all $y \in \reals^n$. Thus
+$\corrcn^*_n$ is exactly the positive semi-definite Toeplitz cone, $\toepcn_n$. Nonempty,
+closed, convex cones are reflexive, so $\toepcn_n^* = \corrcn_n$, and $\toepcn_n$ is not
+symmetric.
+
+\todo[inline]{Do we need more than this? Is it clear that these aren't the same thing or should we provide an example?}
+\todo[inline]{Do we need to show that it is nonempty, closed, and convex? Or is that too obvious?}
+
+Let $\psi_n(x)$ be a self-concordant $\nu$ logarithmically homogenous barrier for $\toepcn_n$.
+Recall that $\nu$ logarithmically homogenous functions satisfy
+\[
+  \psi_n(tx) = -\nu \log(t) + \psi_n(x).
+\]
+Similarly, let $\psi^*_n(z)$ be the conjugate barrier to $\psi_n$
+\[
+  \psi^*_n(x) = \max\{-s^Tx- \psi_n(x) \mid x \in \toepcn_n\}.
+\]
+In TODO:ref(Nesterov 94 or 96) it is shown that $\psi^*_n$ is a self-concordant and $\nu$ logarithmically homogenous barrier function for
+$\corrcn_n$. 
+
+\section{A Standard Primal-Dual Interior-Point Method}
+We turn now to consider primal-dual interior point methods and their unsuitability for
+solving un-symmetric cone problems. The dual problem of (\ref{primal}) is 
+\begin{equation}\label{dual}
+  \begin{array}{ll}
+    \mbox{maximize}    & b^Ty \\
+    \mbox{subject to } & c= A^Ty + s\\
+                       & s \in \corrcn_n. 
+  \end{array}
+\end{equation}
+where $y,s\in \reals^n$ are the optimization variables. Any solution of (\ref{primal}) and (\ref{dual})
+must satisfy the optimality conditions
+\begin{equation}\label{optcond}
+  Ax = b\\
+  A^Ty + s = c\\
+\end{equation}
+
+\section{Alternative Strategies}
+
+\section{Numerical Results}
+\end{document}
