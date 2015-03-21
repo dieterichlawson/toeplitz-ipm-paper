@@ -223,6 +223,12 @@ inexplicably jumped up to 14.7 on the 10th iteration. Each point produced was
 strictly feasible. In contrast, CVX took only 0.3 seconds to produce a better
 objective value of 11.04.
 
+We had intended to also compare Nesterov's method to the barrier method
+solution as it appears in \cite{alkire2002convex}. Poor conditioning on the
+Hessian, however, again kept us from achieving an implementation we are
+satisfied with. However, we expect that improvements in this conditioning,
+using the same algorithm, would still yield a fast solver.
+
 %\newpage
 \bibliography{project}
 
