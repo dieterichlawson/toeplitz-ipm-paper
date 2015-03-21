@@ -158,5 +158,15 @@ interested in. He does lots of stuff to blah \todo[inline]{Section on vanderberg
 \section{A Predictor-Corrector Method}
 Nesterov's method goes here.
 \section{Numerical Results}
+Our implementation is hosted on Github at \url{github.com/mstaib/toeplitz-ipm}.
+Unfortunately we were unable to produce a fully working variation of Nesterov's
+algorithm. We encountered difficulties with poorly-conditioned Hessians among
+other things. We tested the specific problem with $c = \mathbf 1 \in \mathbb
+R^4$, $A \in \mathbb R^{3\times 4}$, and $b = A \cdot (8,4,2,1)^T$. Given a
+starting feasible point, our method managed 10 iterations in about 2 seconds,
+approximately converging to an objective value of 12.83 before this
+inexplicably jumped up to 14.7 on the 10th iteration. Each point produced was
+strictly feasible. In contrast, CVX took only 0.3 seconds to produce a better
+objective value of 11.04.
 
 \end{document}
