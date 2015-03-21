@@ -8,6 +8,7 @@
 \usepackage{amssymb}
 \usepackage{epstopdf}
 \usepackage{enumerate}
+\usepackage{hyperref}
 \usepackage[margin=1.0in]{geometry}
 
 \bibliographystyle{alpha}
@@ -45,19 +46,15 @@ over $\toepcn$, i.e. we present methods for solving problems of the form
                        & x \in \toepcn_n. 
   \end{array}
 \end{equation}
-
 where $x\in \reals^n$ is the optimization variable, $c \in \reals^n$, $A \in \reals^{m\times n}$, 
 and $b \in \reals^m$. The central difficulty for problems of this form is that $\toepcn_n$
 is not symmetric, so much of the standard primal-dual machinery becomes unweildly.
 
 The remainder of this paper is organized as follows. We first explore the properties of 
-$\toepcn_n$, deriving its dual and showing that it is not symmetric. To motivate
-new algorithms we then investigate how un-symmetric cones present a problem for a standard 
-primal-dual interior point method. We discuss a suitable barrier for $\toepcn_n$ 
-and its use in two different algorithms that make speed gains over the standard primal-dual
-interior-point method by forgoing pieces of the dual picture. Finally we present some 
-numeric results from these algorithms. Note that nothing presented here is original, and in
-many cases follows our sources literally.
+$\toepcn_n$, deriving its dual and showing that it is not symmetric.  We discuss a suitable 
+barrier for $\toepcn_n$ and its use in two different algorithms that make speed gains 
+over the standard primal-dual interior-point method by not calculating the derivatives
+of the dual barrier. Finally we present some numeric results from these algorithms. 
 
 \section{The Positive Semi-Definite Toeplitz Cone}
 
@@ -84,18 +81,21 @@ $\corrcn^*_n$ is exactly the positive semi-definite Toeplitz cone, $\toepcn_n$. 
 closed, convex cones are reflexive, so $\toepcn_n^* = \corrcn_n$, and $\toepcn_n$ is not
 symmetric.
 
-The cone $\toepcn_n$ is of practical interest because it posses a 
-$\nu$ self-concordant logarithmically homogenous barrier function
+The cone $\toepcn_n$ posesses a $\theta$ self-concordant logarithmically homogenous barrier function
 \[
 \phi_n(x) = - \log \det T_n(x).
 \]
+A $\theta$ logarithmically homogenous function satisfies
+\[
+ \phi_n(tx) = -\theta \log t + \phi_n(x).
+\]
 
-The cone $\toepcn_n$ is especially interesting because there are fast methods for evaluating
-the $\phi_n$ and its gradient and Hessian, as detailed in TODO:CITE. The motivation for this
+The cone $\toepcn_n$ is of particular practical interest because there are fast methods for evaluating
+$\phi_n$, its gradient, and its Hessian, as detailed in \cite{alkire2002convex}. The motivation for this
 paper is the desire to solve cone problems like (\ref{primal}) without evaluating the
 gradient or Hessian of the dual barrier, which would be very expensive. Instead, we develop
 techniques that use only the derivatives of the primal barrier function which we can evaluate
-quickly using the methods given in CITE.
+quickly using the methods given in \cite{alkire2002convex}.
 
 \section{The Barrier Method}
 
@@ -111,11 +111,22 @@ more general than (\ref{primal})
   \end{array}
 \end{equation}
 where all variables are as in (\ref{primal}), and $K$ is a proper (closed, convex, solid, pointed) cone 
-possessing a self-concordant and $\nu$-logarithmically homogenous barrier function, $\phi$.
-A $\nu$ logarithmically homogenous barrier satisfies
+possessing a self-concordant and $\theta$-logarithmically homogenous barrier function, $\phi$. The
+dual of (\ref{primalgen}) is
+\begin{equation}\label{dual}
+  \begin{array}{ll}
+    \mbox{maximize}    & -b^T\lambda \\
+    \mbox{subject to } & c + A^T\lambda + \nu = 0 \\
+                       & \nu \in K^* \\
+  \end{array}
+\end{equation}
+where $\lambda\in \reals^m, \nu \in \reals^n$ and $K^*$ is the dual cone of $K$. We assume
+that (\ref{primalgen}) and (\ref{dual}) satisfy the interior point condition, i.e. that there
+exists a strictly feasible $(x^0,\lambda^0,\nu^0)$ that satisfies
 \[
-  \phi(tx) = -\nu \log(t) + \phi(x).
+ Ax^0=b,\; x^0 \in \mathbf{int} K, \; c+ A^T\lambda^0 + \nu^0 = 0,\; \nu^0 \in \mathbf{int} K^*.
 \]
+
 The \emph{barrier method} is an interior-point method that solves (\ref{primalgen}) by using
 $\phi$ to make the cone constraint implicit in the objective. Using equality-constrained
 Newton's method, the barrier method solves a series of problems of the form
@@ -126,7 +137,7 @@ Newton's method, the barrier method solves a series of problems of the form
     \mbox{subject to } & Ax = b
   \end{array}
 \end{equation}
-where $t \in \reals,\;t >0$. For each $t >0$, (\ref{primalt}) has a unique minimizer TODO:ref,
+where $t \in \reals,\;t >0$. For each $t >0$, (\ref{primalt}) has a unique minimizer \cite{BoV:04},
 which defines the \emph{primal central path}
 \[
   x^*(t) = \arg\min_x\{tc^Tx + \phi(x) \mid Ax=b\}.
@@ -138,33 +149,30 @@ optimality conditions
 \[
   tc + \nabla\phi(x^*(t)) + A^Ty = 0 ,\; Ax^*(t) = b ,\; x^*(t) \in K
 \]
-for some $y\in\reals^m$. It can be shown TODO:cite that if  $x \in \mathbf{int} K$ then
-$\nabla\phi(x) \in K^*$. Thus, from the optimality conditions we 
-see that $\nabla\phi(x^*(t))/t$, $y/t$ are feasible for the dual of (\ref{primal}). 
-The dual is
-\begin{equation}\label{dual}
-  \begin{array}{ll}
-    \mbox{maximize}    & -b^T\lambda \\
-    \mbox{subject to } & c + A^T\lambda + \nu = 0 \\
-                       & \nu \in K^* \\
-  \end{array}
-\end{equation}
-where $\lambda\in \reals^m, \nu \in \reals^n$ and $K^*$ is the dual cone of $K$. Plugging
-$y/t$ into the dual objective and subtracting it from the primal gives
+for some $y\in\reals^m$. It can be shown that if  $x \in \mathbf{int} K$ then
+$\nabla\phi(x) \in K^*$ \cite{alkire2002convex}. Thus, from the optimality conditions we 
+see that $\nabla\phi(x^*(t))/t$, $y/t$ are feasible for the dual, (\ref{dual}).
+Plugging $y/t$ into the dual objective and subtracting it from the primal gives
 \[
-  c^Tx^*(t) + b^T(y/t) =   \text{MAGIC} = \nu/t.
+  c^Tx^*(t) + b^T(y/t) =  x^*(t)\nabla\phi(x^*(t))/t = \nu/t
 \]
+
 This bounds the sub-optimality of $x^*(t)$ as
 \[
-  c^Tx^*(t) - p^* \leq c^Tx^*(t) + b^T(y/t) = \nu/t 
+  c^Tx^*(t) - p^* \leq c^Tx^*(t) + b^T(y/t) = \theta/t 
 \]
 where $p^*$ is the optimal value of (\ref{primal}). So, in summary we can solve a sequence of 
 problems of the form (\ref{primalt}) with equality-constrained Newton's
-method until $\nu/t$ is less than our desired accuracy. 
+method until $\theta/t$ is less than our desired accuracy. 
 
-\todo[inline]{paragraph on: we would like to do primal-dual IPMs but can't (just give KKT)}
+A natural improvement would be to use a primal-dual interior point method,
+but such a method would require evaluating both the primal and dual barrier derivatives
+which as we discussed earlier would be computationally expensive. The barrier method
+presented here avoids this, allowing us to only evaluate the gradient and Hessian of the
+primal barrier which we can do efficiently.
+
 \section{A Predictor-Corrector Method}
-In \todo{cite Nesterov}, Nesterov presents an algorithm for solving a general
+In \cite{nesterov2006towards}, Nesterov presents an algorithm for solving a general
 primal-dual cone problem, i.e. when the cone is not necessarily symmetric. This
 method involves a centering step based on the primal, and uses the dual barrier
 only in computing an appropriate step size. While the usual gradient and
@@ -186,7 +194,6 @@ computation of a step size $\alpha$ such that $\Omega(z + \alpha \delta z) =
 conjugate barrier. Again, we know of no closed-form solution, so we compute
 $\alpha$ using the bisection method.
 
-
 \section{Numerical Results}
 Our implementation is hosted on Github at \url{github.com/mstaib/toeplitz-ipm}.
 Unfortunately we were unable to produce a fully working variation of Nesterov's
@@ -200,6 +207,6 @@ strictly feasible. In contrast, CVX took only 0.3 seconds to produce a better
 objective value of 11.04.
 
 \newpage
-\bibliography{final}
+\bibliography{project}
 
 \end{document}

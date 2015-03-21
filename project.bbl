@@ -1,0 +1,19 @@
+\begin{thebibliography}{Nes06}
+
+\bibitem[AV02]{alkire2002convex}
+Brien Alkire and Lieven Vandenberghe.
+\newblock Convex optimization problems involving finite autocorrelation
+  sequences.
+\newblock {\em Mathematical Programming}, 93(3):331--359, 2002.
+
+\bibitem[BV04]{BoV:04}
+S.~Boyd and L.~Vandenberghe.
+\newblock {\em Convex Optimization}.
+\newblock Cambridge University Press, 2004.
+
+\bibitem[Nes06]{nesterov2006towards}
+Yurii Nesterov.
+\newblock Towards nonsymmetric conic optimization.
+\newblock {\em Available at SSRN 921788}, 2006.
+
+\end{thebibliography}
