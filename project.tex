@@ -10,6 +10,8 @@
 \usepackage{enumerate}
 \usepackage[margin=1.0in]{geometry}
 
+\bibliographystyle{alpha}
+
 % homework section framework, etc...
 \input defs.tex
 \title{Implementation of interior-point methods for positive semi-definite Toeplitz cone programming}
@@ -71,20 +73,29 @@ The dual of $\corrcn_n$ is
 \[
   \corrcn^*_n = \{z \in \reals^n \mid z^Tx \geq 0 \text{ for } x \in \corrcn_n\}.
 \]
-If $z^Tx \geq 0$ for all $x \in \corrcn_n$, then for all
-$y \in \reals^n$ 
+Because $x$ is a finite autocorrelation sequence, $z^Tx \geq 0$ for all $x \in \corrcn_n$
+if and only if
 \[
-  z^Tx \geq 0 \iff \sum_{i=1}^n z_i \left(\sum_{i=1}^{n-k} y_iy_{i+k}\right).
+  \sum_{i=1}^n z_i \left(\sum_{i=1}^{n-k} y_iy_{i+k}\right) \geq 0.
 \]
-\todo[inline]{probably don't want that iff symbol in there}
-The summation above can be expressed in terms of the Toeplitz form of $z$ ---
+This summation can be expressed in terms of the Toeplitz form of $z$ ---
 the above is true if and only if $y^TT_n(z)y \geq 0$ for all $y \in \reals^n$. Thus
 $\corrcn^*_n$ is exactly the positive semi-definite Toeplitz cone, $\toepcn_n$. Nonempty,
 closed, convex cones are reflexive, so $\toepcn_n^* = \corrcn_n$, and $\toepcn_n$ is not
 symmetric.
 
-\todo[inline]{Do we need more than this? Is it clear that these aren't the same thing or should we provide an example?}
-\todo[inline]{Do we need to show that it is nonempty, closed, and convex? Or is that too obvious?}
+The cone $\toepcn_n$ is of practical interest because it posses a 
+$\nu$ self-concordant logarithmically homogenous barrier function
+\[
+\phi_n(x) = - \log \det T_n(x).
+\]
+
+The cone $\toepcn_n$ is especially interesting because there are fast methods for evaluating
+the $\phi_n$ and its gradient and Hessian, as detailed in TODO:CITE. The motivation for this
+paper is the desire to solve cone problems like (\ref{primal}) without evaluating the
+gradient or Hessian of the dual barrier, which would be very expensive. Instead, we develop
+techniques that use only the derivatives of the primal barrier function which we can evaluate
+quickly using the methods given in CITE.
 
 \section{The Barrier Method}
 
@@ -115,21 +126,22 @@ Newton's method, the barrier method solves a series of problems of the form
     \mbox{subject to } & Ax = b
   \end{array}
 \end{equation}
-where $t \in \reals,\;t >0$. For each $t >0$, (\ref{primalt}) has a unique minimizer TODO:ref
-and that series of minimizers define the \emph{primal central path}
+where $t \in \reals,\;t >0$. For each $t >0$, (\ref{primalt}) has a unique minimizer TODO:ref,
+which defines the \emph{primal central path}
 \[
   x^*(t) = \arg\min_x\{tc^Tx + \phi(x) \mid Ax=b\}.
 \]
 Each point on the primal central path is associated with a dual-feasible point which
 can be used to lower-bound the optimal value of (\ref{primalgen}). To see this note that
-any minimizer of (\ref{primalt}) $x^*(t)$ must satisfy the optimality conditions
+any minimizer of (\ref{primalt}) $x^*(t)$ must satisfy the
+optimality conditions
 \[
-  tc + \nabla\phi(x^*(t)) - y^TA = 0
+  tc + \nabla\phi(x^*(t)) + A^Ty = 0 ,\; Ax^*(t) = b ,\; x^*(t) \in K
 \]
 for some $y\in\reals^m$. It can be shown TODO:cite that if  $x \in \mathbf{int} K$ then
 $\nabla\phi(x) \in K^*$. Thus, from the optimality conditions we 
 see that $\nabla\phi(x^*(t))/t$, $y/t$ are feasible for the dual of (\ref{primal}). 
-The dual is:
+The dual is
 \begin{equation}\label{dual}
   \begin{array}{ll}
     \mbox{maximize}    & -b^T\lambda \\
@@ -137,22 +149,18 @@ The dual is:
                        & \nu \in K^* \\
   \end{array}
 \end{equation}
-
-where $\lambda, \nu \in \reals^n$ and $K^*$ is the dual cone of $K$. Now we can plug 
-$y/t$ into the dual objective, giving:
+where $\lambda\in \reals^m, \nu \in \reals^n$ and $K^*$ is the dual cone of $K$. Plugging
+$y/t$ into the dual objective and subtracting it from the primal gives
 \[
-  c^Tx^*(t) + b^T(y/t) =   \text{MAGIC} = \nu/t
+  c^Tx^*(t) + b^T(y/t) =   \text{MAGIC} = \nu/t.
 \]
-Which bounds the sub-optimality of 
+This bounds the sub-optimality of $x^*(t)$ as
 \[
-  \text{something} \leq \nu/t 
+  c^Tx^*(t) - p^* \leq c^Tx^*(t) + b^T(y/t) = \nu/t 
 \]
-This suggests the following algorithm:
-
-\todo[inline]{Algo goes here}
-
-In fact in TODO:Cite Vaderberghe's paper just such a barrier is proposed for the cone we're
-interested in. He does lots of stuff to blah \todo[inline]{Section on vanderberghe paper}
+where $p^*$ is the optimal value of (\ref{primal}). So, in summary we can solve a sequence of 
+problems of the form (\ref{primalt}) with equality-constrained Newton's
+method until $\nu/t$ is less than our desired accuracy. 
 
 \todo[inline]{paragraph on: we would like to do primal-dual IPMs but can't (just give KKT)}
 \section{A Predictor-Corrector Method}
@@ -190,5 +198,8 @@ approximately converging to an objective value of 12.83 before this
 inexplicably jumped up to 14.7 on the 10th iteration. Each point produced was
 strictly feasible. In contrast, CVX took only 0.3 seconds to produce a better
 objective value of 11.04.
+
+\newpage
+\bibliography{final}
 
 \end{document}
