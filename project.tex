@@ -86,36 +86,77 @@ symmetric.
 \todo[inline]{Do we need more than this? Is it clear that these aren't the same thing or should we provide an example?}
 \todo[inline]{Do we need to show that it is nonempty, closed, and convex? Or is that too obvious?}
 
-Let $\psi_n(x)$ be a self-concordant $\nu$ logarithmically homogenous barrier for $\toepcn_n$.
-Recall that $\nu$ logarithmically homogenous functions satisfy
-\[
-  \psi_n(tx) = -\nu \log(t) + \psi_n(x).
-\]
-Similarly, let $\psi^*_n(z)$ be the conjugate barrier to $\psi_n$
-\[
-  \psi^*_n(x) = \max\{-s^Tx- \psi_n(x) \mid x \in \toepcn_n\}.
-\]
-In TODO:ref(Nesterov 94 or 96) it is shown that $\psi^*_n$ is a self-concordant and $\nu$ logarithmically homogenous barrier function for
-$\corrcn_n$. 
+\section{The Barrier Method}
 
-\section{A Standard Primal-Dual Interior-Point Method}
-We turn now to consider primal-dual interior point methods and their unsuitability for
-solving un-symmetric cone problems. The dual problem of (\ref{primal}) is 
-\begin{equation}\label{dual}
+We turn now to interior point methods and their suitability for
+solving un-symmetric cone problems. Consider the following problem, which is slightly 
+more general than (\ref{primal})
+
+\begin{equation}\label{primalgen}
   \begin{array}{ll}
-    \mbox{maximize}    & b^Ty \\
-    \mbox{subject to } & c= A^Ty + s\\
-                       & s \in \corrcn_n. 
+    \mbox{minimize}    & c^Tx \\
+    \mbox{subject to } & Ax = b \\
+                       & x \in K
   \end{array}
 \end{equation}
-where $y,s\in \reals^n$ are the optimization variables. Any solution of (\ref{primal}) and (\ref{dual})
-must satisfy the optimality conditions
-\begin{equation}\label{optcond}
-  Ax = b\\
-  A^Ty + s = c\\
+where all variables are as in (\ref{primal}), and $K$ is a proper (closed, convex, solid, pointed) cone 
+possessing a self-concordant and $\nu$-logarithmically homogenous barrier function, $\phi$.
+A $\nu$ logarithmically homogenous barrier satisfies
+\[
+  \phi(tx) = -\nu \log(t) + \phi(x).
+\]
+The \emph{barrier method} is an interior-point method that solves (\ref{primalgen}) by using
+$\phi$ to make the cone constraint implicit in the objective. Using equality-constrained
+Newton's method, the barrier method solves a series of problems of the form
+
+\begin{equation}\label{primalt}
+  \begin{array}{ll}
+    \mbox{minimize}    & tc^Tx + \phi(x)\\
+    \mbox{subject to } & Ax = b
+  \end{array}
+\end{equation}
+where $t \in \reals,\;t >0$. For each $t >0$, (\ref{primalt}) has a unique minimizer TODO:ref
+and that series of minimizers define the \emph{primal central path}
+\[
+  x^*(t) = \arg\min_x\{tc^Tx + \phi(x) \mid Ax=b\}.
+\]
+Each point on the primal central path is associated with a dual-feasible point which
+can be used to lower-bound the optimal value of (\ref{primalgen}). To see this note that
+any minimizer of (\ref{primalt}) must satisfy the optimality conditions
+\[
+  tc + \nabla\phi(x^*(t)) - \hat{\lambda}^TA = 0
+\]
+for some $\hat{\lambda}$. It can be shown TODO:cite that if  $x \in \mathbf{int} K$ then
+$\nabla\phi(x) \in K^*$. Thus, we claim that $\nabla\phi(x^*(t))/t$, $\hat{\lambda}/t$
+are feasible for the dual of (\ref{primal}). The dual is:
+\begin{equation}\label{dual}
+  \begin{array}{ll}
+    \mbox{maximize}    & -b^T\lambda \\
+    \mbox{subject to } & c + A^T\lambda + \nu = 0 \\
+                       & \nu \in K^* \\
+  \end{array}
 \end{equation}
 
-\section{Alternative Strategies}
+where $\lambda, \nu \in \reals^n$ and $K^*$ is the dual cone of $K$. Since 
+$\nabla\phi(x^*(t))/t$, $\hat{\lambda}/t$ are dual-feasible, we can plug $\hat{\lambda}/t$
+into the dual objective, giving:
+\[
+  c^Tx + b^T(\hat{\lambda}/t) =   \text{MAGIC} = \nu/t
+\]
+Thus we can bound:
+\[
+  \text{something} \leq \nu/t 
+\]
+This suggests the following algorithm:
 
+\todo[inline]{Algo goes here}
+
+In fact in TODO:Cite Vaderberghe's paper just such a barrier is proposed for the cone we're
+interested in. He does lots of stuff to blah \todo[inline]{Section on vanderberghe paper}
+
+\todo[inline]{paragraph on: we would like to do primal-dual IPMs but can't (just give KKT)}
+\section{A Predictor-Corrector Method}
+Nesterov's method goes here.
 \section{Numerical Results}
+
 \end{document}
