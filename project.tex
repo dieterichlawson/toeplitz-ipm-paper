@@ -113,7 +113,7 @@ quickly using the methods given in \cite{alkire2002convex}.
 \section{The Barrier Method}
 
 We turn now to interior point methods and their suitability for
-solving un-symmetric cone problems. Consider the following problem, which is slightly 
+solving non-symmetric cone problems. Consider the following problem, which is slightly 
 more general than (\ref{primal})
 
 \begin{equation}\label{primalgen}
@@ -178,11 +178,15 @@ where $p^*$ is the optimal value of (\ref{primal}). So, in summary we can solve 
 problems of the form (\ref{primalt}) with equality-constrained Newton's
 method until $\theta/t$ is less than our desired accuracy. 
 
-A natural improvement would be to use a primal-dual interior point method,
-but such a method would require evaluating both the primal and dual barrier derivatives
-which as we discussed earlier would be computationally expensive. The barrier method
-presented here avoids this, allowing us to only evaluate the gradient and Hessian of the
-primal barrier which we can do efficiently.
+Alkire and Vandenberghe \cite{alkire2002convex} use the barrier method to solve
+the Toeplitz cone problem that arises as the dual of autocorrelation cone
+problems. A natural improvement would be to use a primal-dual interior point
+method, where we stay within a neighborhood of the central path instead of on
+the central path, but such a method would require evaluating both the primal
+and dual barrier derivatives which as we discussed earlier would be
+computationally expensive. The barrier method presented here avoids this,
+allowing us to only evaluate the gradient and Hessian of the primal barrier
+which we can do efficiently.
 
 \section{A Predictor-Corrector Method}
 In \cite{nesterov2006towards}, Nesterov presents an algorithm for solving a general
