@@ -36,8 +36,21 @@ with $\toep(x)$ defined as
 
 In words, $\toep (x)$ is the square Toeplitz matrix resulting from taking the $i$th
 entry of $x$ as the $i$th sub- and super-diagonal. This cone appears in various applications
-in signal processing \todo[inline]{Flesh out applications}. In this paper we investigate methods for cone programming
-over $\toepcn$, i.e. we present methods for solving problems of the form
+in signal processing. In super-resolution, total-variation denoising is tightly
+linked to solving the feasibility problem 
+\begin{equation}\label{superresolution}
+  \begin{array}{ll}
+    \mbox{find}    & Q \text{ hermitian}\\
+    \mbox{subject to } & \begin{bmatrix} Q & \nu \\ \nu^* & 1 \end{bmatrix} \in S_n^+\\
+                       & \mathcal T^*(Q) = d^2 e_1,
+  \end{array}
+\end{equation}
+where $\mathcal T^*(M)_j = \sum_{i=1}^{n-j+1} M_{i, i+j-1}$ \cite{fernandez2014convex}.
+Note that the constraints force $Q$ to be Toeplitz, so it should be possible to write 
+problem \ref{superresolution} as a modified version of a Toeplitz semidefinite cone problem, with a cone that is the Euclidean product between $\toepcn$ and an inequality constraint. As we will discuss in the next section, \cite{alkire2002convex} presents some signal processing problems whose dual problems have a feasible set which is, up to affine transformation, the Euclidean product of $\toepcn$ and other more standard cones.
+
+In this paper we investigate methods for cone programming
+over $\toepcn_n$, i.e. we present methods for solving problems of the form
 
 \begin{equation}\label{primal}
   \begin{array}{ll}
@@ -81,13 +94,13 @@ $\corrcn^*_n$ is exactly the positive semi-definite Toeplitz cone, $\toepcn_n$. 
 closed, convex cones are reflexive, so $\toepcn_n^* = \corrcn_n$, and $\toepcn_n$ is not
 symmetric.
 
-The cone $\toepcn_n$ posesses a $\theta$ self-concordant logarithmically homogenous barrier function
+The cone $\toepcn_n$ posesses a $\theta$ self-concordant $n$-logarithmically homogenous barrier function
 \[
 \phi_n(x) = - \log \det T_n(x).
 \]
-A $\theta$ logarithmically homogenous function satisfies
+A $n$-logarithmically homogenous function satisfies
 \[
- \phi_n(tx) = -\theta \log t + \phi_n(x).
+ \phi_n(tx) = -n \log t + \phi_n(x).
 \]
 
 The cone $\toepcn_n$ is of particular practical interest because there are fast methods for evaluating
@@ -206,7 +219,7 @@ inexplicably jumped up to 14.7 on the 10th iteration. Each point produced was
 strictly feasible. In contrast, CVX took only 0.3 seconds to produce a better
 objective value of 11.04.
 
-\newpage
+%\newpage
 \bibliography{project}
 
 \end{document}
